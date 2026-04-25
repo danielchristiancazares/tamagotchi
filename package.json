@@ -1,0 +1,52 @@
+{
+  "name": "tamagotchi-desktop",
+  "version": "1.0.0",
+  "description": "A Tamagotchi-style virtual pet for your desktop",
+  "main": "main.js",
+  "author": "Tamagotchi Team",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/pet.test.js",
+    "test:visual": "node test/visual/animator.visual.test.js",
+    "test:visual:update": "UPDATE_BASELINES=1 node test/visual/animator.visual.test.js",
+    "test:all": "node test/pet.test.js && node test/visual/animator.visual.test.js",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "pack": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.tamagotchi.desktop",
+    "productName": "Tamagotchi Desktop Pet",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.games"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png",
+      "category": "Game"
+    }
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  }
+}

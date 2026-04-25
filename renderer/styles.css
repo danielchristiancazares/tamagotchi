@@ -1,0 +1,472 @@
+/* ============================================
+   Tamagotchi Desktop Pet - Stylesheet
+   Pixel-art retro theme with LCD screen
+   ============================================ */
+
+/* ---- CSS Variables (Color Palette) ---- */
+:root {
+  --bg-primary: #FFF8F0;
+  --bg-screen: #E8F5E9;
+  --border-color: #5D4037;
+  --btn-feed: #FF8C42;
+  --btn-feed-dark: #D35400;
+  --btn-play: #FF6B9D;
+  --btn-play-dark: #C2185B;
+  --btn-clean: #4ECDC4;
+  --btn-clean-dark: #00897B;
+  --btn-sleep: #7B68EE;
+  --btn-sleep-dark: #512DA8;
+  --btn-pet: #FF6B6B;
+  --btn-pet-dark: #D32F2F;
+  --text-dark: #3E2723;
+  --text-light: #FFF8F0;
+  --stat-hunger: #FF8C42;
+  --stat-happiness: #FF6B9D;
+  --stat-energy: #4ECDC4;
+  --stat-hygiene: #45B7A0;
+  --bg-night: #1a1a2e;
+}
+
+/* ---- Global Reset ---- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Press Start 2P', monospace;
+  background-color: #f5e6d3;
+  background-image: radial-gradient(circle at 20% 50%, rgba(255,200,150,0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(200,230,201,0.3) 0%, transparent 50%);
+  color: var(--text-dark);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+
+/* ---- Main Game Container ---- */
+.game-container {
+  width: 400px;
+  background-color: var(--bg-primary);
+  border: 6px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  box-shadow:
+    0 0 0 3px #8D6E63,
+    0 8px 0 var(--border-color),
+    0 12px 20px rgba(0,0,0,0.3);
+}
+
+/* ---- Title Bar ---- */
+.title-bar {
+  width: 100%;
+  text-align: center;
+  padding: 8px 0;
+  border-bottom: 3px solid var(--border-color);
+}
+
+.title-bar h1 {
+  font-size: 18px;
+  letter-spacing: 4px;
+  color: var(--border-color);
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+
+/* ---- Screen Container ---- */
+.screen-container {
+  position: relative;
+  width: 336px;
+  height: 256px;
+  border: 4px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-screen);
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+}
+
+#pet-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ---- Scanline Overlay ---- */
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.04) 2px,
+    rgba(0,0,0,0.04) 4px
+  );
+  z-index: 10;
+}
+
+/* ---- Stats Container ---- */
+.stats-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 8px;
+  width: 64px;
+  text-align: right;
+  color: var(--text-dark);
+  letter-spacing: 1px;
+}
+
+.stat-bar {
+  flex: 1;
+  height: 14px;
+  display: flex;
+  gap: 2px;
+  background-color: #ddd;
+  border: 2px solid var(--border-color);
+  border-radius: 3px;
+  padding: 1px;
+}
+
+.stat-segment {
+  flex: 1;
+  border-radius: 1px;
+  transition: background-color 0.3s ease;
+  background-color: transparent;
+}
+
+.stat-segment.empty {
+  background-color: transparent;
+}
+
+/* ---- Buttons Container ---- */
+.buttons-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 4px 0;
+}
+
+/* Row wrapping for last 2 buttons */
+.buttons-container .btn-sleep {
+  grid-column: 1;
+}
+.buttons-container .btn-pet {
+  grid-column: 2;
+}
+
+/* ---- Action Buttons ---- */
+.action-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  padding: 10px 4px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-light);
+  text-transform: uppercase;
+  position: relative;
+  transition: transform 0.05s, box-shadow 0.05s, filter 0.2s;
+  outline: none;
+  user-select: none;
+}
+
+/* 3D shadow effect per button color */
+.btn-feed {
+  background-color: var(--btn-feed);
+  box-shadow: 0 4px 0 var(--btn-feed-dark);
+}
+.btn-play {
+  background-color: var(--btn-play);
+  box-shadow: 0 4px 0 var(--btn-play-dark);
+}
+.btn-clean {
+  background-color: var(--btn-clean);
+  box-shadow: 0 4px 0 var(--btn-clean-dark);
+}
+.btn-sleep {
+  background-color: var(--btn-sleep);
+  box-shadow: 0 4px 0 var(--btn-sleep-dark);
+}
+.btn-pet {
+  background-color: var(--btn-pet);
+  box-shadow: 0 4px 0 var(--btn-pet-dark);
+}
+
+/* Hover effect */
+.action-btn:hover:not(.disabled) {
+  filter: brightness(1.1);
+}
+
+/* Active/Pressed state */
+.action-btn:active:not(.disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 transparent;
+}
+
+/* Pressed animation keyframe */
+@keyframes btnPress {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+  100% { transform: translateY(0); }
+}
+
+.action-btn.pressed {
+  animation: btnPress 0.15s ease;
+}
+
+/* Disabled state (cooldown) */
+.action-btn.disabled,
+.action-btn.cooldown {
+  filter: grayscale(0.8) brightness(0.7);
+  pointer-events: none;
+  cursor: not-allowed;
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+}
+
+/* ---- Info Footer ---- */
+.info-footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px;
+  font-size: 8px;
+  border-top: 2px solid var(--border-color);
+  color: var(--text-dark);
+}
+
+#info-health {
+  color: #E53935;
+  font-size: 10px;
+}
+
+/* ---- Notifications ---- */
+.notifications {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  z-index: 100;
+  width: 90%;
+}
+
+.notification {
+  font-size: 8px;
+  padding: 6px 10px;
+  background-color: rgba(62, 39, 35, 0.9);
+  color: var(--text-light);
+  border-radius: 4px;
+  white-space: nowrap;
+  animation: slideIn 0.3s ease-out;
+  pointer-events: none;
+}
+
+.notification.fade-out {
+  animation: fadeOut 0.5s ease-in forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Heart float animation */
+@keyframes heartFloat {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-40px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.heart-particle {
+  animation: heartFloat 1.5s ease-out forwards;
+  color: #FF6B9D;
+  font-size: 14px;
+  position: absolute;
+}
+
+/* ---- Scrollbar styling (retro) ---- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+/* ---- Quote Bubble ---- */
+.quote-bubble {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  max-width: 280px;
+  min-width: 160px;
+  padding: 10px 14px;
+  background: #fff;
+  border: 3px solid var(--border-color);
+  border-radius: 14px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  line-height: 1.5;
+  color: var(--text-dark);
+  text-align: center;
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.quote-bubble.visible {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Pixel-art tail */
+.quote-tail {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid var(--border-color);
+}
+
+.quote-tail::after {
+  content: '';
+  position: absolute;
+  top: -13px;
+  left: -6px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #fff;
+}
+
+/* Personality colors for quote bubbles */
+.quote-bubble.personality-quirky {
+  border-color: #9C27B0;
+  background: #F3E5F5;
+}
+.quote-bubble.personality-quirky .quote-tail {
+  border-top-color: #9C27B0;
+}
+.quote-bubble.personality-quirky .quote-tail::after {
+  border-top-color: #F3E5F5;
+}
+
+.quote-bubble.personality-cute {
+  border-color: #E91E63;
+  background: #FCE4EC;
+}
+.quote-bubble.personality-cute .quote-tail {
+  border-top-color: #E91E63;
+}
+.quote-bubble.personality-cute .quote-tail::after {
+  border-top-color: #FCE4EC;
+}
+
+.quote-bubble.personality-funny {
+  border-color: #FF9800;
+  background: #FFF3E0;
+}
+.quote-bubble.personality-funny .quote-tail {
+  border-top-color: #FF9800;
+}
+.quote-bubble.personality-funny .quote-tail::after {
+  border-top-color: #FFF3E0;
+}
+
+.quote-bubble.personality-absurd {
+  border-color: #00BCD4;
+  background: #E0F7FA;
+}
+.quote-bubble.personality-absurd .quote-tail {
+  border-top-color: #00BCD4;
+}
+.quote-bubble.personality-absurd .quote-tail::after {
+  border-top-color: #E0F7FA;
+}
+
+.quote-bubble.personality-unhinged {
+  border-color: #F44336;
+  background: #FFEBEE;
+}
+.quote-bubble.personality-unhinged .quote-tail {
+  border-top-color: #F44336;
+}
+.quote-bubble.personality-unhinged .quote-tail::after {
+  border-top-color: #FFEBEE;
+}
+
+.quote-bubble.personality-sardonic {
+  border-color: #607D8B;
+  background: #ECEFF1;
+}
+.quote-bubble.personality-sardonic .quote-tail {
+  border-top-color: #607D8B;
+}
+.quote-bubble.personality-sardonic .quote-tail::after {
+  border-top-color: #ECEFF1;
+}

@@ -1,0 +1,407 @@
+[
+  {
+    "type": "call",
+    "method": "clearRect",
+    "args": [
+      0,
+      0,
+      320,
+      240
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#E8F5E9"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      0,
+      0,
+      320,
+      240
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#FFF9C4"
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      270,
+      50,
+      18,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "rgba(255, 255, 255, 0.8)"
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      50,
+      40,
+      12.5,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      60,
+      35,
+      10,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      67.5,
+      40,
+      8.75,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      180,
+      60,
+      15,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      192,
+      54,
+      12,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      201,
+      60,
+      10.5,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      260,
+      35,
+      10,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      268,
+      31,
+      8,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      274,
+      35,
+      7,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#87CEEB"
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "moveTo",
+    "args": [
+      147.25,
+      88
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      175.25,
+      88
+    ]
+  },
+  {
+    "type": "call",
+    "method": "quadraticCurveTo",
+    "args": [
+      183.25,
+      88,
+      183.25,
+      96
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      183.25,
+      124
+    ]
+  },
+  {
+    "type": "call",
+    "method": "quadraticCurveTo",
+    "args": [
+      183.25,
+      132,
+      175.25,
+      132
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      147.25,
+      132
+    ]
+  },
+  {
+    "type": "call",
+    "method": "quadraticCurveTo",
+    "args": [
+      139.25,
+      132,
+      139.25,
+      124
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      139.25,
+      96
+    ]
+  },
+  {
+    "type": "call",
+    "method": "quadraticCurveTo",
+    "args": [
+      139.25,
+      88,
+      147.25,
+      88
+    ]
+  },
+  {
+    "type": "call",
+    "method": "closePath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "rgba(0,0,0,0.1)"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      143.25,
+      126,
+      36,
+      6
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#fff"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      145.57,
+      95,
+      12,
+      12
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      164.93,
+      95,
+      12,
+      12
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#333"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      148.57,
+      99,
+      6,
+      6
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      167.93,
+      99,
+      6,
+      6
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#fff"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      151.57,
+      97,
+      3,
+      3
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      170.93,
+      97,
+      3,
+      3
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#333"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      157.25,
+      120,
+      8,
+      3
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "rgba(0, 255, 0, 0.12)"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      0,
+      0,
+      320,
+      240
+    ]
+  }
+]

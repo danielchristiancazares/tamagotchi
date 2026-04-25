@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;">
+  <title>Tamagotchi Desktop Pet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="game-container">
+    <!-- Title Bar -->
+    <div class="title-bar">
+      <h1>TAMAGOTCHI</h1>
+    </div>
+
+    <!-- Canvas Screen -->
+    <div class="screen-container">
+      <canvas id="pet-canvas" width="320" height="240"></canvas>
+      <div class="scanlines"></div>
+      <div class="quote-bubble" id="quote-bubble" style="display:none;">
+        <span class="quote-text" id="quote-text"></span>
+        <span class="quote-tail"></span>
+      </div>
+    </div>
+
+    <!-- Stat Bars -->
+    <div class="stats-container">
+      <div class="stat-row">
+        <span class="stat-label">HUNGER</span>
+        <div class="stat-bar" id="stat-hunger"></div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">HAPPY</span>
+        <div class="stat-bar" id="stat-happiness"></div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">ENERGY</span>
+        <div class="stat-bar" id="stat-energy"></div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">HYGIENE</span>
+        <div class="stat-bar" id="stat-hygiene"></div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="buttons-container">
+      <button class="action-btn btn-feed" id="btn-feed">FEED</button>
+      <button class="action-btn btn-play" id="btn-play">PLAY</button>
+      <button class="action-btn btn-clean" id="btn-clean">CLEAN</button>
+      <button class="action-btn btn-sleep" id="btn-sleep">SLEEP</button>
+      <button class="action-btn btn-pet" id="btn-pet">PET</button>
+    </div>
+
+    <!-- Info Footer -->
+    <div class="info-footer">
+      <span id="info-age">Age: 0m</span>
+      <span id="info-stage">Egg</span>
+      <span id="info-health">&#9829; 80</span>
+    </div>
+
+    <!-- Notifications Area -->
+    <div class="notifications" id="notifications"></div>
+  </div>
+
+  <!-- Scripts loaded at bottom for performance -->
+  <script src="quotes.js"></script>
+  <script src="pet.js"></script>
+  <script src="animator.js"></script>
+  <script src="ui.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

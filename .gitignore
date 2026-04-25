@@ -1,0 +1,31 @@
+node_modules/
+*.log
+.DS_Store
+dist/
+
+# WSL alternate data streams
+*:Zone.Identifier
+
+# Env files
+.env
+.env.*
+
+# IDE / editor
+.vscode/
+.idea/
+
+# Claude Code
+.claude/
+.mcp.json
+
+# Codex local state
+.codex
+
+# Empty bootstrap lockfiles (keep whichever you actually use)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bunfig.toml
+.npmrc
+.yarnrc
+.yarnrc.yml

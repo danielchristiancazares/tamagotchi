@@ -1,0 +1,459 @@
+[
+  {
+    "type": "call",
+    "method": "clearRect",
+    "args": [
+      0,
+      0,
+      320,
+      240
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#E8F5E9"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      0,
+      0,
+      320,
+      240
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#FFF9C4"
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      270,
+      50,
+      18,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "rgba(255, 255, 255, 0.8)"
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      50,
+      40,
+      12.5,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      60,
+      35,
+      10,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      67.5,
+      40,
+      8.75,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      180,
+      60,
+      15,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      192,
+      54,
+      12,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      201,
+      60,
+      10.5,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      260,
+      35,
+      10,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      268,
+      31,
+      8,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      274,
+      35,
+      7,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#87CEEB"
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "moveTo",
+    "args": [
+      146,
+      88
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      174,
+      88
+    ]
+  },
+  {
+    "type": "call",
+    "method": "quadraticCurveTo",
+    "args": [
+      182,
+      88,
+      182,
+      96
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      182,
+      124
+    ]
+  },
+  {
+    "type": "call",
+    "method": "quadraticCurveTo",
+    "args": [
+      182,
+      132,
+      174,
+      132
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      146,
+      132
+    ]
+  },
+  {
+    "type": "call",
+    "method": "quadraticCurveTo",
+    "args": [
+      138,
+      132,
+      138,
+      124
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      138,
+      96
+    ]
+  },
+  {
+    "type": "call",
+    "method": "quadraticCurveTo",
+    "args": [
+      138,
+      88,
+      146,
+      88
+    ]
+  },
+  {
+    "type": "call",
+    "method": "closePath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "rgba(0,0,0,0.1)"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      142,
+      126,
+      36,
+      6
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#fff"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      144.32,
+      95,
+      12,
+      12
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      163.68,
+      95,
+      12,
+      12
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#333"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      147.32,
+      99,
+      6,
+      6
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      166.68,
+      99,
+      6,
+      6
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#fff"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      150.32,
+      97,
+      3,
+      3
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      169.68,
+      97,
+      3,
+      3
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "#FF6B9D"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      155,
+      119,
+      10,
+      4
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      153,
+      116,
+      5,
+      5
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      162,
+      116,
+      5,
+      5
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "rgba(255, 107, 157, 0.4)"
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      136,
+      114,
+      5,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "arc",
+    "args": [
+      184,
+      114,
+      5,
+      0,
+      6.28
+    ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  }
+]
