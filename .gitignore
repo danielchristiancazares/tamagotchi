@@ -21,6 +21,9 @@ dist/
 # Codex local state
 .codex
 
+# Repomix output
+repomix-output.*
+
 # Empty bootstrap lockfiles (keep whichever you actually use)
 package-lock.json
 pnpm-lock.yaml

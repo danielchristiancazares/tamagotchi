@@ -1,10 +1,3 @@
-// ============================================
-// Tamagotchi UI Controller
-// Handles DOM manipulation, stat bars, buttons,
-// cooldowns, notifications, quote bubbles.
-// Completely decoupled from Game — only knows Pet + Animator.
-// ============================================
-
 const UI_CONST = {
   STAT_SEGMENTS: 10,
   COOLDOWN_FEED: 10,
@@ -28,7 +21,6 @@ const UI_CONST = {
 
 const STAT_KEYS = ['hunger', 'happiness', 'energy', 'hygiene'];
 
-/** Read stat colors from CSS custom properties (--stat-*). Single source of truth. */
 function readStatColorsFromCSS() {
   if (typeof document === 'undefined' || typeof getComputedStyle !== 'function') {
     return {};
@@ -42,30 +34,35 @@ function readStatColorsFromCSS() {
 }
 
 class UI {
-  /**
-   * @param {Pet} pet — the pet instance to display
-   * @param {Animator|null} animator — optional animator for visual effects
-   */
-  constructor(pet, animator = null) {
+  constructor(pet, actions = {}) {
     this.pet = pet;
-    this.animator = animator;
+    this._actions = actions;
+    this._quoteFn = actions.quoteFn || null;
 
     this.quoteTimer = null;
-    this.quoteCooldowns = {}; // { category: true/false }
+    this.quoteCooldowns = {};
     this._cooldownIntervals = new Set();
     this._quoteCooldownTimeouts = new Set();
     this._miscTimeouts = new Set();
     this._disposed = false;
     this._statColors = readStatColorsFromCSS();
+    this._lastLogLength = -1;
+    this._lastLogTail = 0;
+    this._lastLogRenderTime = 0;
+    this._companionClickTimer = null;
+    this._companionClickHandler = null;
+    this._companionDblClickHandler = null;
+    this._companionContextHandler = null;
 
     this.setupButtons();
     this.setupStatBars();
+    this.renderActivityLog();
     console.log('[UI] Controller initialized');
   }
 
-  /** Cancel all intervals/timeouts this UI owns. Safe to call twice. */
   destroy() {
     if (this._disposed) return;
+    this.setCompanionMode(false);
     this._disposed = true;
 
     this._cooldownIntervals.forEach(id => clearInterval(id));
@@ -82,20 +79,19 @@ class UI {
       this.quoteTimer = null;
     }
 
+    this.removeCompanionListeners();
+    this.removeRestartButton();
+
     console.log('[UI] Controller destroyed');
   }
 
   setupButtons() {
     const actions = {
-      'btn-feed':  () => this.pet.feed(),
-      'btn-play':  () => this.pet.play(),
-      'btn-clean': () => this.pet.clean(),
-      'btn-sleep': () => this.pet.toggleSleep(),
-      'btn-pet':   () => {
-        const result = this.pet.pet();
-        if (result && this.animator) this.animator.spawnHearts(3);
-        return result;
-      }
+      'btn-feed':  () => this._actions.onFeed(),
+      'btn-play':  () => this._actions.onPlay(),
+      'btn-clean': () => this._actions.onClean(),
+      'btn-sleep': () => this._actions.onSleep(),
+      'btn-pet':   () => this._actions.onPet()
     };
 
     Object.entries(actions).forEach(([id, action]) => {
@@ -151,16 +147,24 @@ class UI {
     }
   }
 
+  _getBtnLabel(btn) {
+    return btn.querySelector('.btn-label');
+  }
+
   triggerCooldown(btn, seconds) {
     btn.classList.add('cooldown', 'disabled');
     let remaining = seconds;
-    const originalText = btn.dataset.originalText || btn.textContent;
+    const label = this._getBtnLabel(btn);
+    const currentText = label ? label.textContent : btn.textContent;
+    const originalText = btn.dataset.originalText || currentText;
 
     if (!btn.dataset.originalText) {
       btn.dataset.originalText = originalText;
     }
 
-    btn.textContent = `${originalText} (${remaining})`;
+    const displayText = `${originalText} (${remaining})`;
+    if (label) label.textContent = displayText;
+    else btn.textContent = displayText;
 
     const timer = setInterval(() => {
       remaining--;
@@ -171,10 +175,13 @@ class UI {
         const finalText = btn.id === 'btn-sleep'
           ? (this.pet.isSleeping ? 'WAKE' : 'SLEEP')
           : btn.dataset.originalText;
-        btn.textContent = finalText;
+        if (label) label.textContent = finalText;
+        else btn.textContent = finalText;
         btn.dataset.originalText = finalText;
       } else {
-        btn.textContent = `${btn.dataset.originalText} (${remaining})`;
+        const updateText = `${btn.dataset.originalText} (${remaining})`;
+        if (label) label.textContent = updateText;
+        else btn.textContent = updateText;
       }
     }, 1000);
     this._cooldownIntervals.add(timer);
@@ -215,25 +222,71 @@ class UI {
     const stageEl = document.getElementById('info-stage');
     const healthEl = document.getElementById('info-health');
 
-    if (ageEl) ageEl.textContent = `Age: ${this.pet.ageText}`;
+    if (ageEl) ageEl.textContent = `Age: ${PetPresenter.displayAge(this.pet.age)}`;
     if (stageEl) {
       const variantText = this.pet.variant !== 'normal' ? ` (${this.pet.variant})` : '';
-      stageEl.textContent = `${this.pet.displayStage()}${variantText} ${this.pet.displayPersonalityEmoji()}`;
+      stageEl.textContent = `${PetPresenter.displayStage(this.pet.stage)}${variantText} ${PetPresenter.displayPersonalityEmoji(this.pet.personality)}`;
     }
     if (healthEl) {
-      healthEl.innerHTML = `<span style="color:${this.pet.displayHealthColor()}">&#9829;</span> ${this.pet.health}`;
+      healthEl.innerHTML = `<span style="color:${PetPresenter.displayHealthColor(this.pet.health)}">&#9829;</span> ${this.pet.health}`;
     }
 
     const sleepBtn = document.getElementById('btn-sleep');
     if (sleepBtn && !sleepBtn.classList.contains('cooldown')) {
       const newText = this.pet.isSleeping ? 'WAKE' : 'SLEEP';
-      sleepBtn.textContent = newText;
+      const sleepLabel = this._getBtnLabel(sleepBtn);
+      if (sleepLabel) sleepLabel.textContent = newText;
+      else sleepBtn.textContent = newText;
       sleepBtn.dataset.originalText = newText;
     }
 
     document.querySelectorAll('.action-btn').forEach(btn => {
       btn.classList.toggle('disabled', !this.pet.isAlive);
     });
+
+    this.renderActivityLog();
+  }
+
+  renderActivityLog() {
+    const container = document.getElementById('activity-log-entries');
+    if (!container) return;
+
+    const log = Array.isArray(this.pet.activityLog) ? this.pet.activityLog : [];
+    const tail = log.length ? log[log.length - 1].t : 0;
+    const now = Date.now();
+    if (log.length === this._lastLogLength && tail === this._lastLogTail && now - this._lastLogRenderTime < 1000) return;
+
+    this._lastLogLength = log.length;
+    this._lastLogTail = tail;
+    this._lastLogRenderTime = now;
+
+    while (container.firstChild) container.removeChild(container.firstChild);
+
+    const recent = log.slice(-30).reverse();
+    for (const entry of recent) {
+      const row = document.createElement('div');
+      row.className = `activity-log-entry kind-${entry.kind || 'info'}`;
+
+      const time = document.createElement('span');
+      time.className = 'activity-log-time';
+      time.textContent = this._formatLogTime(entry.t);
+
+      const msg = document.createElement('span');
+      msg.className = 'activity-log-msg';
+      msg.textContent = entry.msg;
+
+      row.appendChild(time);
+      row.appendChild(msg);
+      container.appendChild(row);
+    }
+  }
+
+  _formatLogTime(t) {
+    const diff = Math.floor((Date.now() - t) / 1000);
+    if (diff < 60) return `${diff}s`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+    return `${Math.floor(diff / 86400)}d`;
   }
 
   showNotification(text) {
@@ -294,7 +347,9 @@ class UI {
     if (this.quoteCooldowns[category]) return;
     if (category !== 'idle' && this.quoteCooldowns['idle']) return;
 
-    const quote = this.pet.getQuote(category);
+    const quote = this._quoteFn
+      ? this._quoteFn(this.pet.personality, category)
+      : null;
     if (!quote) return;
 
     this.showQuoteBubble(quote, this.pet.personality);
@@ -310,4 +365,107 @@ class UI {
     const container = document.getElementById('notifications');
     if (container) container.innerHTML = '';
   }
+
+  setCompanionMode(enabled) {
+    const container = document.querySelector('.game-container');
+    const canvas = document.getElementById('pet-canvas');
+    if (!container) return;
+
+    if (enabled) {
+      container.classList.add('companion-mode');
+      if (canvas) {
+        canvas.width = 160;
+        canvas.height = 160;
+      }
+    } else {
+      container.classList.remove('companion-mode');
+      if (canvas) {
+        canvas.width = 320;
+        canvas.height = 240;
+      }
+      this.update();
+    }
+
+    document.body.classList.toggle('companion-body', enabled);
+  }
+
+  addCompanionListeners(handlers) {
+    const canvas = document.getElementById('pet-canvas');
+    if (!canvas) return;
+
+    this._companionClickHandler = () => {
+      if (this._companionClickTimer) {
+        clearTimeout(this._companionClickTimer);
+        this._companionClickTimer = null;
+      }
+      this._companionClickTimer = setTimeout(() => {
+        this._companionClickTimer = null;
+        if (handlers.onClick) handlers.onClick();
+      }, 250);
+    };
+
+    this._companionDblClickHandler = () => {
+      if (this._companionClickTimer) {
+        clearTimeout(this._companionClickTimer);
+        this._companionClickTimer = null;
+      }
+      if (handlers.onDblClick) handlers.onDblClick();
+    };
+
+    this._companionContextHandler = (e) => {
+      e.preventDefault();
+      if (handlers.onContextMenu) handlers.onContextMenu();
+    };
+
+    canvas.addEventListener('click', this._companionClickHandler);
+    canvas.addEventListener('dblclick', this._companionDblClickHandler);
+    canvas.addEventListener('contextmenu', this._companionContextHandler);
+    canvas.style.cursor = 'pointer';
+  }
+
+  removeCompanionListeners() {
+    const canvas = document.getElementById('pet-canvas');
+    if (!canvas) return;
+
+    if (this._companionClickHandler) {
+      canvas.removeEventListener('click', this._companionClickHandler);
+      this._companionClickHandler = null;
+    }
+    if (this._companionDblClickHandler) {
+      canvas.removeEventListener('dblclick', this._companionDblClickHandler);
+      this._companionDblClickHandler = null;
+    }
+    if (this._companionContextHandler) {
+      canvas.removeEventListener('contextmenu', this._companionContextHandler);
+      this._companionContextHandler = null;
+    }
+    if (this._companionClickTimer) {
+      clearTimeout(this._companionClickTimer);
+      this._companionClickTimer = null;
+    }
+    canvas.style.cursor = '';
+  }
+
+  createRestartButton(onClick) {
+    if (document.getElementById('restart-btn')) return;
+    const container = document.querySelector('.game-container');
+    if (!container) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'restart-btn';
+    btn.textContent = 'New Pet';
+    btn.className = 'action-btn btn-pet';
+    btn.style.cssText = 'position:absolute;left:50%;top:58%;transform:translateX(-50%);z-index:200;font-size:10px;padding:12px 20px;';
+    btn.addEventListener('click', onClick);
+    container.appendChild(btn);
+  }
+
+  removeRestartButton() {
+    const btn = document.getElementById('restart-btn');
+    if (btn) btn.remove();
+  }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { UI, UI_CONST };
 }

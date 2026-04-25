@@ -47,11 +47,29 @@
 
     <!-- Action Buttons -->
     <div class="buttons-container">
-      <button class="action-btn btn-feed" id="btn-feed">FEED</button>
-      <button class="action-btn btn-play" id="btn-play">PLAY</button>
-      <button class="action-btn btn-clean" id="btn-clean">CLEAN</button>
-      <button class="action-btn btn-sleep" id="btn-sleep">SLEEP</button>
-      <button class="action-btn btn-pet" id="btn-pet">PET</button>
+      <button class="action-btn btn-feed" id="btn-feed">
+        <img src="data/icons/feed.png" alt="" class="btn-icon">
+        <span class="btn-label">FEED</span>
+      </button>
+      <button class="action-btn btn-play" id="btn-play">
+        <img src="data/icons/play.png" alt="" class="btn-icon">
+        <span class="btn-label">PLAY</span>
+      </button>
+      <button class="action-btn btn-clean" id="btn-clean">
+        <img src="data/icons/clean.png" alt="" class="btn-icon">
+        <span class="btn-label">CLEAN</span>
+      </button>
+      <button class="action-btn btn-sleep" id="btn-sleep">
+        <img src="data/icons/sleep.png" alt="" class="btn-icon">
+        <span class="btn-label">SLEEP</span>
+      </button>
+      <button class="action-btn btn-pet" id="btn-pet">
+        <img src="data/icons/pet.png" alt="" class="btn-icon">
+        <span class="btn-label">PET</span>
+      </button>
+      <button class="action-btn btn-hobbies" id="btn-hobbies">
+        <span class="btn-label">HOBBIES</span>
+      </button>
     </div>
 
     <!-- Info Footer -->
@@ -59,6 +77,19 @@
       <span id="info-age">Age: 0m</span>
       <span id="info-stage">Egg</span>
       <span id="info-health">&#9829; 80</span>
+      <button class="companion-toggle-btn" id="btn-companion">COMPANION</button>
+    </div>
+
+    <!-- Activity Log -->
+    <div class="activity-log" id="activity-log">
+      <div class="activity-log-header">ACTIVITY</div>
+      <div class="activity-log-entries" id="activity-log-entries"></div>
+    </div>
+
+    <!-- Hobby Panel -->
+    <div class="hobby-panel" id="hobby-panel" style="display:none;">
+      <div class="hobby-panel-header">HOBBIES</div>
+      <div class="hobby-panel-content" id="hobby-panel-content"></div>
     </div>
 
     <!-- Notifications Area -->
@@ -66,6 +97,7 @@
   </div>
 
   <!-- Scripts loaded at bottom for performance -->
+  <script src="pet-presenter.js"></script>
   <script src="quotes.js"></script>
   <script src="pet.js"></script>
   <script src="animator.js"></script>

@@ -1,5 +1,10 @@
 [
   {
+    "type": "set",
+    "property": "imageSmoothingEnabled",
+    "value": false
+  },
+  {
     "type": "call",
     "method": "clearRect",
     "args": [
@@ -12,7 +17,7 @@
   {
     "type": "set",
     "property": "fillStyle",
-    "value": "#1a1a2e"
+    "value": "#0e1520"
   },
   {
     "type": "call",
@@ -53,7 +58,7 @@
   {
     "type": "set",
     "property": "fillStyle",
-    "value": "#1a1a2e"
+    "value": "#0e1520"
   },
   {
     "type": "call",
@@ -70,6 +75,221 @@
       0,
       6.28
     ]
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "rgba(200, 230, 255, 0.15)"
+  },
+  {
+    "type": "call",
+    "method": "fillRect",
+    "args": [
+      0,
+      204,
+      320,
+      36
+    ]
+  },
+  {
+    "type": "set",
+    "property": "fillStyle",
+    "value": "rgba(200, 230, 255, 0.6)"
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "moveTo",
+    "args": [
+      30,
+      0
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      34,
+      0
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      32,
+      12
+    ]
+  },
+  {
+    "type": "call",
+    "method": "closePath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "moveTo",
+    "args": [
+      100,
+      0
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      104,
+      0
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      102,
+      12
+    ]
+  },
+  {
+    "type": "call",
+    "method": "closePath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "moveTo",
+    "args": [
+      170,
+      0
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      174,
+      0
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      172,
+      12
+    ]
+  },
+  {
+    "type": "call",
+    "method": "closePath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "moveTo",
+    "args": [
+      240,
+      0
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      244,
+      0
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      242,
+      12
+    ]
+  },
+  {
+    "type": "call",
+    "method": "closePath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "fill",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "beginPath",
+    "args": []
+  },
+  {
+    "type": "call",
+    "method": "moveTo",
+    "args": [
+      310,
+      0
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      314,
+      0
+    ]
+  },
+  {
+    "type": "call",
+    "method": "lineTo",
+    "args": [
+      312,
+      12
+    ]
+  },
+  {
+    "type": "call",
+    "method": "closePath",
+    "args": []
   },
   {
     "type": "call",
@@ -264,7 +484,7 @@
     "method": "moveTo",
     "args": [
       140,
-      82
+      104
     ]
   },
   {
@@ -272,7 +492,7 @@
     "method": "lineTo",
     "args": [
       180,
-      82
+      104
     ]
   },
   {
@@ -280,9 +500,9 @@
     "method": "quadraticCurveTo",
     "args": [
       188,
-      82,
+      104,
       188,
-      90
+      112
     ]
   },
   {
@@ -290,7 +510,7 @@
     "method": "lineTo",
     "args": [
       188,
-      130
+      152
     ]
   },
   {
@@ -298,9 +518,9 @@
     "method": "quadraticCurveTo",
     "args": [
       188,
-      138,
+      160,
       180,
-      138
+      160
     ]
   },
   {
@@ -308,7 +528,7 @@
     "method": "lineTo",
     "args": [
       140,
-      138
+      160
     ]
   },
   {
@@ -316,9 +536,9 @@
     "method": "quadraticCurveTo",
     "args": [
       132,
-      138,
+      160,
       132,
-      130
+      152
     ]
   },
   {
@@ -326,7 +546,7 @@
     "method": "lineTo",
     "args": [
       132,
-      90
+      112
     ]
   },
   {
@@ -334,9 +554,9 @@
     "method": "quadraticCurveTo",
     "args": [
       132,
-      82,
+      104,
       140,
-      82
+      104
     ]
   },
   {
@@ -359,7 +579,7 @@
     "method": "fillRect",
     "args": [
       136,
-      132,
+      154,
       48,
       6
     ]
@@ -374,7 +594,7 @@
     "method": "fillRect",
     "args": [
       141.68,
-      92,
+      114,
       12,
       12
     ]
@@ -384,7 +604,7 @@
     "method": "fillRect",
     "args": [
       166.32,
-      92,
+      114,
       12,
       12
     ]
@@ -399,7 +619,7 @@
     "method": "fillRect",
     "args": [
       144.68,
-      96,
+      118,
       6,
       6
     ]
@@ -409,7 +629,7 @@
     "method": "fillRect",
     "args": [
       169.32,
-      96,
+      118,
       6,
       6
     ]
@@ -424,7 +644,7 @@
     "method": "fillRect",
     "args": [
       147.68,
-      94,
+      116,
       3,
       3
     ]
@@ -434,7 +654,7 @@
     "method": "fillRect",
     "args": [
       172.32,
-      94,
+      116,
       3,
       3
     ]
@@ -449,7 +669,7 @@
     "method": "fillRect",
     "args": [
       156,
-      123,
+      145,
       8,
       3
     ]

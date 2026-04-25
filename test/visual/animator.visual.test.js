@@ -11,6 +11,8 @@ const fs = require('fs');
 const path = require('path');
 const { test, run, describe, assert } = require('../runner');
 const { Pet } = require('../../renderer/pet');
+const { PetPresenter } = require('../../renderer/pet-presenter');
+globalThis.PetPresenter = PetPresenter;
 const { Animator } = require('../../renderer/animator');
 const { CanvasRecorder } = require('./recorder');
 const { MockCanvas } = require('./mock-canvas');
@@ -36,10 +38,7 @@ function makeRecordingAnimator(width = 320, height = 240) {
     getContext: (type) => type === '2d' ? recorder : null
   };
 
-  // Manually wire the Animator to use our fake canvas
-  // (normally it does document.getElementById, but we bypass that)
-  const animator = new Animator('dummy');
-  animator.canvas = fakeCanvas;
+  const animator = new Animator('dummy', { canvas: fakeCanvas });
   animator.ctx = recorder;
 
   return { animator, recorder };
@@ -240,6 +239,20 @@ describe('Animator Visual Regression', () => {
     if (!result.passed) {
       assert.fail(`Visual mismatch in dead (${result.diffs.length} diffs)`);
     }
+  });
+
+});
+
+describe('drawGameOver uses PetPresenter.displayStage', () => {
+
+  test('drawGameOver records fillText with capitalized stage', () => {
+    const { animator, recorder } = makeRecordingAnimator();
+    const pet = makeVisualPet({ stage: 'teen', state: 'dead' });
+    animator.drawGameOver(pet);
+    const calls = recorder.getRecording();
+    const stageCall = calls.find(c => c.type === 'call' && c.method === 'fillText' && typeof c.args[0] === 'string' && c.args[0].includes('Reached:'));
+    assert(stageCall, 'expected a fillText call with "Reached:"');
+    assert(stageCall.args[0].includes('Teen'), `expected "Teen" in "${stageCall.args[0]}", got ${stageCall.args[0]}`);
   });
 
 });

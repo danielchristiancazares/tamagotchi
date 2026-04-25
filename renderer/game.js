@@ -1,9 +1,3 @@
-// ============================================
-// Tamagotchi Main Game Controller
-// Orchestrates pet logic, rendering, UI, save/load.
-// All intervals and listeners are tracked for clean disposal.
-// ============================================
-
 const GAME_CONST = {
   TICK_INTERVAL: 1000,
   SAVE_INTERVAL: 30,
@@ -17,20 +11,36 @@ const GAME_CONST = {
 };
 
 class Game {
-  constructor() {
+  constructor({
+    saveGame = async () => ({ success: false }),
+    loadGame = async () => null,
+    setCompanionMode = null,
+    onBeforeQuit = () => () => {},
+    notifyQuitSaveDone = () => {},
+    getInitialMode = () => 'normal'
+  } = {}) {
+    this._saveGame = saveGame;
+    this._loadGame = loadGame;
+    this._setCompanionMode = setCompanionMode;
+    this._onBeforeQuit = onBeforeQuit;
+    this._notifyQuitSaveDone = notifyQuitSaveDone;
+    this._getInitialMode = getInitialMode;
+
     this._tickId = null;
     this._rAFId = null;
     this._timeouts = [];
     this._beforeQuitUnsub = null;
 
-    this.pet = new Pet(null, getQuote);
+    this._getQuote = (typeof getQuote === 'function') ? getQuote : () => null;
+
+    this.pet = new Pet();
     this.animator = null;
     this.ui = null;
-
-    this._resetAccumulators();
-
+    this.mode = 'normal';
     this.isRunning = true;
     this.hasShownDeath = false;
+
+    this._resetAccumulators();
 
     console.log('[Game] Controller created');
   }
@@ -39,6 +49,7 @@ class Game {
     this.lastTime = 0;
     this.saveAccumulator = 0;
     this.idleQuoteAccumulator = 0;
+    this.tickCount = 0;
     this.nextIdleQuoteAt = this._randomIdleInterval();
     this.lastPoopQuoteAt = -Infinity;
     this.lastSickQuoteAt = -Infinity;
@@ -47,7 +58,8 @@ class Game {
   }
 
   _randomIdleInterval() {
-    return 20 + Math.floor(Math.random() * 30);
+    const base = 20 + Math.floor(Math.random() * 30);
+    return this.mode === 'companion' ? base * 3 : base;
   }
 
   _trackTimeout(fn, ms) {
@@ -56,13 +68,43 @@ class Game {
     return id;
   }
 
+  _buildUIActions() {
+    return {
+      onFeed: () => this.pet.feed(),
+      onPlay: () => this.pet.play(),
+      onClean: () => this.pet.clean(),
+      onSleep: () => this.pet.toggleSleep(),
+      onPet: () => {
+        const result = this.pet.pet();
+        if (result && this.animator) this.animator.spawnHearts(3, this.pet);
+        return result;
+      },
+      quoteFn: (personality, category) => this._getQuote(personality, category)
+    };
+  }
+
+  _companionCanvasHandlers() {
+    return {
+      onClick: () => {
+        if (!this.pet.isAlive) return;
+        const result = this.pet.pet();
+        if (result && this.animator) this.animator.spawnHearts(3, this.pet);
+        if (result && this.ui) {
+          this.ui.showQuote('pet', 1000);
+        }
+      },
+      onDblClick: () => this.setMode('normal'),
+      onContextMenu: () => this.setMode('normal')
+    };
+  }
+
   async init() {
     console.log('[Game] Initializing...');
 
-    this.animator = new Animator('pet-canvas');
+    this.animator = new Animator('pet-canvas', { stations: PET_CONST.STATIONS });
     await this._tryLoadSave();
 
-    this.ui = new UI(this.pet, this.animator);
+    this.ui = new UI(this.pet, this._buildUIActions());
 
     this._registerQuitHandler();
 
@@ -73,10 +115,42 @@ class Game {
       this._trackTimeout(() => this.ui.showQuote('idle', 500), GAME_CONST.WELCOME_QUOTE_DELAY);
     }
 
+    const initialMode = this._getInitialMode();
+    if (initialMode === 'companion') {
+      this.setMode('companion');
+    }
+
     console.log('[Game] Initialization complete');
   }
 
-  /** Gracefully stop all loops, listeners, and timers */
+  async setMode(newMode) {
+    if (newMode === this.mode) return;
+    const oldMode = this.mode;
+    this.mode = newMode;
+    const isCompanion = newMode === 'companion';
+
+    console.log(`[Game] Mode: ${oldMode} → ${newMode}`);
+
+    if (this.ui) this.ui.setCompanionMode(isCompanion);
+    if (this.animator) this.animator.companionMode = isCompanion;
+
+    this.ui.removeCompanionListeners();
+    if (isCompanion) {
+      this.ui.addCompanionListeners(this._companionCanvasHandlers());
+    }
+
+    this.nextIdleQuoteAt = this._randomIdleInterval();
+
+    if (this._setCompanionMode) {
+      try {
+        await this.saveGame();
+      } catch (e) {
+        console.warn('[Game] Pre-swap save failed:', e.message);
+      }
+      this._setCompanionMode(isCompanion);
+    }
+  }
+
   destroy() {
     console.log('[Game] Destroying...');
     this.isRunning = false;
@@ -104,24 +178,34 @@ class Game {
       this._beforeQuitUnsub = null;
     }
 
+    const restartBtn = document.getElementById('restart-btn');
+    if (restartBtn) restartBtn.remove();
+
     console.log('[Game] Destroyed');
   }
 
-  /** In-memory restart: new pet, fresh UI, no page reload */
   restart() {
     console.log('[Game] Restarting...');
     this.destroy();
 
-    // Remove the restart button if it exists
-    const btn = document.getElementById('restart-btn');
-    if (btn) btn.remove();
-
-    this.pet = new Pet(null, getQuote);
+    this.pet = new Pet();
     this.hasShownDeath = false;
     this.isRunning = true;
     this._resetAccumulators();
 
-    this.ui = new UI(this.pet, this.animator);
+    if (this.animator && typeof this.animator.reset === 'function') {
+      this.animator.reset();
+    }
+
+    this.ui = new UI(this.pet, this._buildUIActions());
+    const isCompanion = this.mode === 'companion';
+    this.ui.setCompanionMode(isCompanion);
+    if (this.animator) this.animator.companionMode = isCompanion;
+    this.ui.removeCompanionListeners();
+    if (isCompanion) {
+      this.ui.addCompanionListeners(this._companionCanvasHandlers());
+    }
+    this.nextIdleQuoteAt = this._randomIdleInterval();
     this.ui.update();
     this._registerQuitHandler();
     this._startLoops();
@@ -130,31 +214,25 @@ class Game {
   }
 
   _registerQuitHandler() {
-    if (window.electronAPI && window.electronAPI.onBeforeQuit) {
-      this._beforeQuitUnsub = window.electronAPI.onBeforeQuit(async () => {
-        try {
-          await this.saveGame();
-        } finally {
-          if (window.electronAPI.notifyQuitSaveDone) {
-            window.electronAPI.notifyQuitSaveDone();
-          }
-        }
-      });
-    }
+    this._beforeQuitUnsub = this._onBeforeQuit(async () => {
+      try {
+        await this.saveGame();
+      } finally {
+        this._notifyQuitSaveDone();
+      }
+    });
   }
 
   async _tryLoadSave() {
     try {
-      if (window.electronAPI && window.electronAPI.loadGame) {
-        const saved = await window.electronAPI.loadGame();
-        if (saved && saved.pet) {
-          const loaded = Pet.deserialize(saved.pet, getQuote);
-          if (loaded.isValid()) {
-            this.pet = loaded;
-            console.log(`[Game] Loaded save: ${this.pet.name} (${this.pet.stage})`);
-          } else {
-            console.warn('[Game] Save data invalid, starting fresh');
-          }
+      const saved = await this._loadGame();
+      if (saved && saved.pet) {
+        const loaded = Pet.deserialize(saved.pet);
+        if (loaded.isValid()) {
+          this.pet = loaded;
+          console.log(`[Game] Loaded save: ${this.pet.name} (${this.pet.stage})`);
+        } else {
+          console.warn('[Game] Save data invalid, starting fresh');
         }
       }
     } catch (e) {
@@ -188,6 +266,7 @@ class Game {
     }
 
     this.idleQuoteAccumulator += 1;
+    this.tickCount += 1;
     if (this.idleQuoteAccumulator >= this.nextIdleQuoteAt) {
       this.idleQuoteAccumulator = 0;
       this.nextIdleQuoteAt = this._randomIdleInterval();
@@ -196,24 +275,45 @@ class Game {
       }
     }
 
-    this._checkEventQuotes();
-    this._checkCriticalStates();
+    if (this.mode !== 'companion') {
+      this._checkEventQuotes();
+      this._checkCriticalStates();
+    }
 
     if (!this.pet.isAlive && !this.hasShownDeath) {
       this.hasShownDeath = true;
       this.isRunning = false;
       if (this.ui) {
-        const deathQuote = this.pet.getQuote('death');
+        const deathQuote = this._getQuote ? this._getQuote(this.pet.personality, 'death') : null;
         if (deathQuote) this.ui.showQuoteBubble(deathQuote, this.pet.personality);
       }
-      console.log(`[Game] ${this.pet.name} died at ${this.pet.ageText}`);
-      this._trackTimeout(() => this._showGameOver(), GAME_CONST.DEATH_OVERLAY_DELAY);
+      console.log(`[Game] ${this.pet.name} died at ${PetPresenter.displayAge(this.pet.age)}`);
+      this._trackTimeout(() => {
+        if (this.animator) this.animator.drawGameOver(this.pet);
+        if (this.ui) this.ui.createRestartButton(() => this.restart());
+      }, GAME_CONST.DEATH_OVERLAY_DELAY);
+    }
+  }
+
+  _snapshotHobbyLevels() {
+    const snap = {};
+    for (const [k, v] of Object.entries(this.pet.hobbies)) snap[k] = v.level;
+    return snap;
+  }
+
+  _checkHobbyLevelUps(prev) {
+    if (!this.ui || !this.pet.isAlive) return;
+    for (const [key, data] of Object.entries(this.pet.hobbies)) {
+      if (data.level > (prev[key] || 1)) {
+        this.ui.showHobbyNotification(key, data.level);
+        this.ui.showQuote('hobby', 6000);
+      }
     }
   }
 
   _checkEventQuotes() {
     if (!this.ui || !this.pet.isAlive) return;
-    const now = this.idleQuoteAccumulator;
+    const now = this.tickCount;
 
     if (this.pet.poops.length > 0 && now - this.lastPoopQuoteAt >= GAME_CONST.EVENT_POOP_INTERVAL) {
       this.ui.showQuote('poop', 8000);
@@ -232,8 +332,8 @@ class Game {
   _checkCriticalStates() {
     if (!this.ui || !this.pet.isAlive) return;
 
-    if (this.idleQuoteAccumulator - this.lastCriticalWarnAt < GAME_CONST.CRITICAL_WARN_INTERVAL) return;
-    this.lastCriticalWarnAt = this.idleQuoteAccumulator;
+    if (this.tickCount - this.lastCriticalWarnAt < GAME_CONST.CRITICAL_WARN_INTERVAL) return;
+    this.lastCriticalWarnAt = this.tickCount;
 
     let warned = false;
     const check = (stat, label) => {
@@ -267,6 +367,10 @@ class Game {
     this.lastTime = timestamp;
     const cappedDt = Math.min(dt, GAME_CONST.DT_CAP);
 
+    if (this.pet && typeof this.pet.step === 'function') {
+      this.pet.step(cappedDt);
+    }
+
     if (this.animator) {
       this.animator.draw(this.pet);
     }
@@ -277,67 +381,57 @@ class Game {
         this.saveAccumulator = 0;
         this.saveGame();
       }
+      this._rAFId = requestAnimationFrame((t) => this._gameLoop(t));
     }
-
-    this._rAFId = requestAnimationFrame((t) => this._gameLoop(t));
   }
 
   async saveGame() {
     try {
-      if (window.electronAPI && window.electronAPI.saveGame) {
-        const result = await window.electronAPI.saveGame({ pet: this.pet.serialize() });
-        if (result && result.success) {
-          console.log('[Game] Saved');
-        } else {
-          console.warn('[Game] Save failed:', result?.error);
-        }
+      const result = await this._saveGame({ pet: this.pet.serialize() });
+      if (result.success) {
+        console.log('[Game] Saved');
+      } else {
+        console.warn('[Game] Save failed:', result.error);
       }
     } catch (e) {
       console.error('[Game] Save error:', e.message);
     }
   }
 
-  _showGameOver() {
-    const canvas = document.getElementById('pet-canvas');
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = '#E53935';
-    ctx.font = '20px "Press Start 2P"';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 30);
-
-    ctx.fillStyle = '#FFF8F0';
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText(`${this.pet.name} lived ${this.pet.ageText}`, canvas.width / 2, canvas.height / 2 + 5);
-    ctx.fillText(`Reached: ${this.pet.displayStage()}`, canvas.width / 2, canvas.height / 2 + 25);
-
-    this._createRestartButton();
-  }
-
-  _createRestartButton() {
-    if (document.getElementById('restart-btn')) return;
-
-    const container = document.querySelector('.game-container');
-    if (!container) return;
-
-    const btn = document.createElement('button');
-    btn.id = 'restart-btn';
-    btn.textContent = 'New Pet';
-    btn.className = 'action-btn btn-pet';
-    btn.style.cssText = 'position:absolute;left:50%;top:58%;transform:translateX(-50%);z-index:200;font-size:10px;padding:12px 20px;';
-    btn.onclick = () => this.restart();
-
-    container.appendChild(btn);
-  }
 }
 
-// Bootstrap
-document.addEventListener('DOMContentLoaded', () => {
-  window.game = new Game();
-  window.game.init();
-});
+if (typeof document !== 'undefined' && document.addEventListener) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const electron = (typeof window !== 'undefined' && window.electronAPI) ? window.electronAPI : {};
+    const services = {
+      getInitialMode: () => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('mode') === 'companion' ? 'companion' : 'normal';
+      },
+      saveGame: (data) => (electron.saveGame ? electron.saveGame(data) : undefined),
+      loadGame: () => (electron.loadGame ? electron.loadGame() : undefined),
+      onBeforeQuit: (fn) => {
+        const unsub = electron.onBeforeQuit ? electron.onBeforeQuit(fn) : undefined;
+        return typeof unsub === 'function' ? unsub : () => {};
+      },
+      notifyQuitSaveDone: () => (electron.notifyQuitSaveDone ? electron.notifyQuitSaveDone() : undefined)
+    };
+    if (electron.setCompanionMode) {
+      services.setCompanionMode = (mode) => electron.setCompanionMode(mode);
+    }
+
+    window.game = new Game(services);
+    window.game.init();
+
+    const companionBtn = document.getElementById('btn-companion');
+    if (companionBtn) {
+      companionBtn.addEventListener('click', () => {
+        window.game.setMode(window.game.mode === 'normal' ? 'companion' : 'normal');
+      });
+    }
+  });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { Game, GAME_CONST };
+}

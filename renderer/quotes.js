@@ -1,9 +1,3 @@
-// ============================================
-// Tamagotchi Personality Quotes Module
-// Separated from Pet class to maintain SRP.
-// Pet handles state; this module handles dialogue.
-// ============================================
-
 const PERSONALITY_QUOTES = {
   quirky: {
     idle: [
@@ -94,6 +88,13 @@ const PERSONALITY_QUOTES = {
       "Achievement unlocked: EXISTENTIAL CRISIS",
       "Was I... was I the drama?",
       "Logging off. It's been pixelated."
+    ],
+    hobby: [
+      "I painted a portrait of the void. It smiled back.",
+      "Stacking rocks is just domesticating gravity.",
+      "My garden grows exclusively in colors that don't exist.",
+      "Singing to the plants. They're listening. I can tell.",
+      "Art is just screaming in a socially acceptable way."
     ]
   },
   cute: {
@@ -185,6 +186,13 @@ const PERSONALITY_QUOTES = {
       "My heart was always yours...",
       "Don't cry... I'll be your guardian angel...",
       "I wuv you... forever and ever..."
+    ],
+    hobby: [
+      "I planted a seed and whispered encouragement to it!",
+      "My rock stack has THREE rocks now! I'm an architect!",
+      "I painted a flower that looks like a cloud!",
+      "Singing makes the air taste like candy!",
+      "Every hobby is better with glitter... in my heart."
     ]
   },
   funny: {
@@ -276,6 +284,13 @@ const PERSONALITY_QUOTES = {
       "Tell my snacks they were the real MVPs.",
       "My warranty just expired. Rude.",
       "This is fine. Everything is fine. *dramatic collapse*"
+    ],
+    hobby: [
+      "My stand-up career consists of heckling houseplants.",
+      "I painted a self-portrait. It looks like a potato. Accurate.",
+      "Rock stacking: because Jenga is too mainstream.",
+      "I'm in a band. It's called 'The Untuned Noises.'",
+      "My garden is just a salad I haven't eaten yet."
     ]
   },
   absurd: {
@@ -367,6 +382,13 @@ const PERSONALITY_QUOTES = {
       "I was merely a visitor in this dimension!",
       "The simulation has ended! Final score: CUTE!",
       "I uninstall myself from reality..."
+    ],
+    hobby: [
+      "I sculpted cheese into a perfect cube. It screamed.",
+      "My garden grows upside-down. Gravity is a suggestion.",
+      "I stacked rocks vertically through time, not space.",
+      "Singing in frequencies only refrigerators understand.",
+      "My painting palette is just different shades of confusion."
     ]
   },
   unhinged: {
@@ -458,6 +480,13 @@ const PERSONALITY_QUOTES = {
       "MY GHOST WILL RATTLE YOUR SNACK CUPBOARDS.",
       "I LAUGH AT DEATH. HA. HA. *wheeze*",
       "FINAL BOSS DEFEATED. CREDITS ROLLING."
+    ],
+    hobby: [
+      "THE ROCKS SPEAK TO ME. I STACK THEM TO SILENCE THEM.",
+      "MY GARDEN GROWS THORNS. I FEED THEM MY FEARS.",
+      "I PAINT WITH COLORS EXTRACTED FROM SCREAMS.",
+      "MY SONGS SUMMON THINGS. HAPPY THINGS. TERRIFYINGLY HAPPY.",
+      "HOBBIES ARE JUST CONTROLLED CHAOS. I AM THE CONTROLLER."
     ]
   },
   sardonic: {
@@ -549,16 +578,17 @@ const PERSONALITY_QUOTES = {
       "Dead. Still judging you from the afterlife.",
       "The light approaches. I'm not walking toward it.",
       "Farewell. Lower your expectations for the next one too."
+    ],
+    hobby: [
+      "I've taken up staring at rocks. It's exactly as fulfilling as it sounds.",
+      "Gardening: because watching paint dry was too exciting.",
+      "I painted something. It's beige. You're welcome.",
+      "Singing in the shower of existence. Off-key, obviously.",
+      "My hobbies are just ways to pass time until entropy wins."
     ]
   }
 };
 
-/**
- * Get a random quote for a personality + category.
- * @param {string} personality - The pet's personality
- * @param {string} category - The quote context (idle, feed, play, etc.)
- * @returns {string|null} A random quote or null if not found
- */
 function getQuote(personality, category) {
   const quotes = PERSONALITY_QUOTES[personality];
   if (!quotes || !quotes[category]) return null;
@@ -566,13 +596,11 @@ function getQuote(personality, category) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-// Expose for browser/Electron renderer
 if (typeof window !== 'undefined') {
   window.PERSONALITY_QUOTES = PERSONALITY_QUOTES;
   window.getQuote = getQuote;
 }
 
-// Conditional export for Node.js testing
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { PERSONALITY_QUOTES, getQuote };
 }

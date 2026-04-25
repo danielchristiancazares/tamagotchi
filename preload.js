@@ -13,16 +13,6 @@
 
 const { contextBridge, ipcRenderer } = require('electron');
 
-// ---------------------------------------------------------------------------
-// Exposed API
-// ---------------------------------------------------------------------------
-
-/**
- * electronAPI — The sole bridge between renderer process and main process.
- *
- * All IPC communication flows through these methods. The renderer CANNOT
- * directly call ipcRenderer or access Node APIs.
- */
 contextBridge.exposeInMainWorld('electronAPI', {
 
   saveGame: (data) => ipcRenderer.invoke('save-game', data),
@@ -36,6 +26,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     };
   },
 
-  notifyQuitSaveDone: () => ipcRenderer.send('quit-save-done')
+  notifyQuitSaveDone: () => ipcRenderer.send('quit-save-done'),
+
+  setCompanionMode: (enabled) => ipcRenderer.invoke('set-companion-mode', enabled)
 
 });
