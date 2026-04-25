@@ -97,9 +97,6 @@ class Animator {
   // ---------- Update (logic, called from game tick) ----------
 
   update(pet) {
-    this._cachedHour = new Date().getHours();
-    this._cachedNow = Date.now();
-
     if (pet.isSick && Math.random() < ANIM_CONST.SNEEZE_CHANCE) {
       this.addParticle(
         this.canvas.width / 2 + 25,
@@ -143,6 +140,9 @@ class Animator {
   draw(pet) {
     const { ctx, canvas } = this;
     if (!ctx) return;
+
+    this._cachedHour = new Date().getHours();
+    this._cachedNow = Date.now();
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 

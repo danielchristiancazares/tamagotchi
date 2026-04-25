@@ -113,10 +113,11 @@ class UI {
           return;
         }
 
+        const wasSleeping = this.pet.isSleeping;
         const result = action();
         if (!result) return;
 
-        const meta = this._getActionMeta(id);
+        const meta = this._getActionMeta(id, wasSleeping);
         if (!meta) return;
 
         btn.classList.add('pressed');
@@ -134,8 +135,8 @@ class UI {
     });
   }
 
-  _getActionMeta(id) {
-    const sleeping = this.pet.isSleeping;
+  _getActionMeta(id, wasSleeping) {
+    const sleeping = wasSleeping !== undefined ? wasSleeping : this.pet.isSleeping;
     switch (id) {
       case 'btn-feed':  return { verb: 'ate happily!', quote: 'feed',  cooldown: UI_CONST.COOLDOWN_FEED };
       case 'btn-play':  return { verb: 'is playing!',  quote: 'play',  cooldown: UI_CONST.COOLDOWN_PLAY };

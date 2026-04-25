@@ -306,6 +306,7 @@ class Pet {
 
   decayStats() {
     if (!this.isAlive) return;
+    if (this.stage === 'egg') return;
 
     if (this.isSleeping) {
       this._setStat('energy', this._stats.energy + PET_CONST.SLEEP_ENERGY_RECOVERY);

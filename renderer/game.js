@@ -64,17 +64,7 @@ class Game {
 
     this.ui = new UI(this.pet, this.animator);
 
-    if (window.electronAPI && window.electronAPI.onBeforeQuit) {
-      this._beforeQuitUnsub = window.electronAPI.onBeforeQuit(async () => {
-        try {
-          await this.saveGame();
-        } finally {
-          if (window.electronAPI.notifyQuitSaveDone) {
-            window.electronAPI.notifyQuitSaveDone();
-          }
-        }
-      });
-    }
+    this._registerQuitHandler();
 
     this.ui.update();
     this._startLoops();
@@ -133,9 +123,24 @@ class Game {
 
     this.ui = new UI(this.pet, this.animator);
     this.ui.update();
+    this._registerQuitHandler();
     this._startLoops();
 
     console.log('[Game] Restarted with new pet');
+  }
+
+  _registerQuitHandler() {
+    if (window.electronAPI && window.electronAPI.onBeforeQuit) {
+      this._beforeQuitUnsub = window.electronAPI.onBeforeQuit(async () => {
+        try {
+          await this.saveGame();
+        } finally {
+          if (window.electronAPI.notifyQuitSaveDone) {
+            window.electronAPI.notifyQuitSaveDone();
+          }
+        }
+      });
+    }
   }
 
   async _tryLoadSave() {
@@ -146,7 +151,6 @@ class Game {
           const loaded = Pet.deserialize(saved.pet, getQuote);
           if (loaded.isValid()) {
             this.pet = loaded;
-            if (this.ui) this.ui.pet = this.pet;
             console.log(`[Game] Loaded save: ${this.pet.name} (${this.pet.stage})`);
           } else {
             console.warn('[Game] Save data invalid, starting fresh');
@@ -252,7 +256,10 @@ class Game {
   }
 
   _gameLoop(timestamp) {
-    if (!this._rAFId) return; // loop stopped
+    if (!this.isRunning || !this._rAFId) {
+      this._rAFId = null;
+      return;
+    }
 
     if (this.lastTime === 0) this.lastTime = timestamp;
 
